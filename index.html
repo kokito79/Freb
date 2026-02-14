@@ -1,337 +1,410 @@
-
 <!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>14 de Febrero • Amistad</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0f1a" />
+  <title>Para ti 💙</title>
   <style>
     :root{
-      --bg0:#070611;
-      --bg1:#120a2a;
-      --bg2:#1a0e3c;
-      --txt:#fff;
-      --soft:#ffffffc8;
-      --glass:#ffffff14;
-      --stroke:#ffffff24;
+      --bg1:#060913; --bg2:#0b1530;
+      --card:#0c1326cc; --stroke:#ffffff22;
+      --txt:#eaf0ff; --muted:#b9c6ffcc; --accent:#7aa2ff;
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --radius: 22px;
     }
-
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; margin:0; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
-      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       color:var(--txt);
+      background: radial-gradient(1200px 800px at 20% 10%, #1b2a66 0%, transparent 55%),
+                  radial-gradient(900px 700px at 80% 30%, #2a145f 0%, transparent 60%),
+                  linear-gradient(180deg, var(--bg1), var(--bg2));
       overflow:hidden;
-      background:
-        radial-gradient(1000px 650px at 20% 20%, rgba(255,90,170,.18), transparent 60%),
-        radial-gradient(900px 600px at 80% 30%, rgba(140,92,255,.18), transparent 60%),
-        radial-gradient(800px 500px at 50% 85%, rgba(60,240,255,.10), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg2));
+      -webkit-tap-highlight-color: transparent;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
 
-    /* fondo animado sutil */
-    .bg{
-      position:fixed; inset:0;
-      background:
-        radial-gradient(500px 400px at 30% 40%, rgba(255,255,255,.06), transparent 60%),
-        radial-gradient(450px 350px at 70% 60%, rgba(255,255,255,.05), transparent 60%);
-      filter: blur(6px);
-      animation: drift 8s ease-in-out infinite;
+    /* Partículas/corazones */
+    .fx{position:fixed; inset:0; pointer-events:none; overflow:hidden}
+    .heart{
+      position:absolute; bottom:-40px;
+      width:14px; height:14px;
+      transform: rotate(45deg);
       opacity:.9;
-      pointer-events:none;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.35));
+      animation: floatUp linear forwards;
     }
-    @keyframes drift{
-      0%,100%{ transform: translate3d(0,0,0) scale(1); }
-      50%{ transform: translate3d(10px,-12px,0) scale(1.02); }
+    .heart::before, .heart::after{
+      content:""; position:absolute; width:14px; height:14px; border-radius:50%;
+      background: currentColor;
+    }
+    .heart{background: currentColor;}
+    .heart::before{left:-7px; top:0}
+    .heart::after{left:0; top:-7px}
+    @keyframes floatUp{
+      to{ transform: translateY(-120vh) rotate(45deg); opacity:0; }
     }
 
+    /* Layout */
     .wrap{
+      position:relative;
       height:100%;
       display:grid;
-      place-items:center;
-      padding: 18px;
-      position:relative;
-      z-index:2;
+      grid-template-rows: auto 1fr auto;
+      gap:14px;
+      padding: 18px 16px 18px 16px;
+      max-width: 520px;
+      margin: 0 auto;
     }
-
-    .frame{
-      width:min(560px, 100%);
-      border-radius: 26px;
-      border:1px solid var(--stroke);
-      background: linear-gradient(135deg, var(--glass), rgba(255,255,255,.06));
-      backdrop-filter: blur(14px);
-      box-shadow: 0 30px 90px rgba(0,0,0,.55);
-      padding: 18px 16px 16px;
-      position:relative;
-      overflow:hidden;
-    }
-
-    .top{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom: 10px;
+    header{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
     }
     .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 9px 12px;
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 12px;
+      border:1px solid var(--stroke);
       border-radius: 999px;
-      border:1px solid #ffffff22;
-      background:#00000022;
-      color:#ffffffde;
-      font-size: 12px;
-      user-select:none;
-    }
-    .mini{
-      color:var(--soft);
-      font-size: 12px;
-      user-select:none;
-    }
-
-    .stage{
-      min-height: 320px;
-      display:grid;
-      place-items:center;
-      padding: 18px 12px 10px;
-      text-align:center;
-    }
-
-    .text{
-      font-weight: 850;
-      letter-spacing: .2px;
-      line-height: 1.1;
-      font-size: clamp(22px, 4.6vw, 36px);
-      margin:0;
-      opacity:0;
-      transform: translateY(10px) scale(.98);
-      filter: drop-shadow(0 18px 30px rgba(0,0,0,.35));
-    }
-
-    .sub{
-      margin-top: 12px;
-      color: #ffffffd8;
-      font-size: 14px;
-      line-height:1.45;
-      opacity:0;
-      transform: translateY(8px);
-    }
-
-    .show .text{
-      animation: popIn .75s cubic-bezier(.2,.9,.2,1) forwards;
-    }
-    .show .sub{
-      animation: popIn2 .75s cubic-bezier(.2,.9,.2,1) .08s forwards;
-    }
-    .hide .text, .hide .sub{
-      animation: fadeOut .45s ease forwards;
-    }
-
-    @keyframes popIn{
-      to{ opacity:1; transform: translateY(0) scale(1); }
-    }
-    @keyframes popIn2{
-      to{ opacity:1; transform: translateY(0); }
-    }
-    @keyframes fadeOut{
-      to{ opacity:0; transform: translateY(-8px) scale(.99); }
-    }
-
-    .footer{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:center;
-      margin-top: 8px;
-    }
-    button{
-      border:1px solid #ffffff26;
-      background: #ffffff12;
-      color:var(--txt);
-      padding: 12px 14px;
-      border-radius: 16px;
-      font-size: 14px;
-      cursor:pointer;
-      user-select:none;
+      background: #0a1024aa;
       backdrop-filter: blur(10px);
-      box-shadow: 0 12px 26px rgba(0,0,0,.25);
-      transition: transform .06s ease;
-    }
-    button:active{ transform: scale(.98); }
-    button.primary{
-      border-color:#ff6aa755;
-      background: linear-gradient(135deg, rgba(255,95,162,.92), rgba(139,92,255,.92));
-    }
-
-    .note{
-      margin-top:10px;
-      text-align:center;
-      color:#ffffffb8;
-      font-size:12px;
+      box-shadow: var(--shadow);
+      font-size:13px;
+      color:var(--muted);
       user-select:none;
     }
+    .badge strong{color:var(--txt); font-weight:650}
+    .btn{
+      appearance:none; border:1px solid var(--stroke);
+      background:#0a1024aa; color:var(--txt);
+      border-radius:999px;
+      padding:10px 12px;
+      font-weight:650;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      user-select:none;
+    }
+    .btn:active{transform: translateY(1px)}
 
-    /* confetti corazones mini */
-    .float{
-      position:fixed; inset:0;
-      pointer-events:none;
-      z-index:3;
+    /* Tarjeta principal */
+    .card{
+      position:relative;
+      border-radius: var(--radius);
+      border:1px solid var(--stroke);
+      background: var(--card);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
       overflow:hidden;
+      display:grid;
+      grid-template-rows: auto 1fr auto;
+      padding: 18px;
+    }
+    .title{
+      font-size: 22px;
+      margin: 6px 0 10px 0;
+      letter-spacing:.2px;
+    }
+    .sub{
+      margin:0 0 14px 0;
+      color:var(--muted);
+      line-height:1.35;
+      font-size: 14px;
+    }
+    .slides{
+      position:relative;
+      height: 100%;
+      min-height: 320px;
+      border-radius: 18px;
+      border: 1px dashed #ffffff22;
+      overflow:hidden;
+      background: #08102a66;
+    }
+    .slide{
+      position:absolute; inset:0;
+      padding:18px 16px;
+      display:grid;
+      align-content:center;
+      gap:10px;
+      transform: translateX(110%);
+      transition: transform .35s ease;
+    }
+    .slide.active{transform: translateX(0)}
+    .slide.prev{transform: translateX(-110%)}
+    .kicker{
+      color: var(--accent);
+      font-weight: 750;
+      letter-spacing:.35px;
+      font-size: 12px;
+      text-transform: uppercase;
     }
     .h{
-      position:absolute;
-      bottom:-30px;
-      opacity:0;
-      animation: rise linear forwards;
-      filter: drop-shadow(0 10px 18px rgba(0,0,0,.35));
+      font-size: 20px;
+      margin:0;
     }
-    @keyframes rise{
-      0%{ transform: translateY(0) translateX(0) scale(.9); opacity:0; }
-      10%{ opacity:.9; }
-      100%{ transform: translateY(-120vh) translateX(var(--dx)) scale(1.25); opacity:0; }
+    .p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.45;
+      font-size: 15px;
+    }
+
+    footer{
+      display:flex; justify-content:space-between; align-items:center;
+      gap:10px; margin-top:14px;
+    }
+    .dots{display:flex; gap:7px; align-items:center}
+    .dot{
+      width:8px; height:8px; border-radius:99px;
+      background:#ffffff22;
+      transition: all .25s ease;
+    }
+    .dot.on{background: var(--accent); width:22px}
+    .nav{
+      display:flex; gap:10px;
+    }
+
+    /* Pantalla de inicio “abre la carta” */
+    .gate{
+      position:absolute; inset:0;
+      display:grid; place-items:center;
+      background: linear-gradient(180deg, #050713ee, #050713aa);
+      backdrop-filter: blur(10px);
+      transition: opacity .25s ease, transform .25s ease;
+    }
+    .gate.hidden{opacity:0; pointer-events:none; transform: scale(1.02)}
+    .gateCard{
+      width:min(460px, 92vw);
+      border-radius: var(--radius);
+      border:1px solid var(--stroke);
+      background: #0c1326dd;
+      box-shadow: var(--shadow);
+      padding:18px;
+      text-align:center;
+    }
+    .big{
+      font-size: 22px; margin:6px 0 6px 0;
+    }
+    .small{
+      color:var(--muted); margin:0 0 14px 0; line-height:1.4;
+    }
+    .cta{
+      width:100%;
+      padding:12px 14px;
+      border-radius: 14px;
+      border:1px solid #ffffff2a;
+      background: linear-gradient(90deg, #2b5cff, #8b5bff);
+      color:white;
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+
+    /* Consejo swipe */
+    .hint{
+      color:#cdd7ffcc;
+      font-size:12px;
+      margin-top:10px;
+      opacity:.85;
     }
   </style>
 </head>
 <body>
-  <div class="bg"></div>
-  <div class="float" id="float"></div>
+  <div class="fx" id="fx"></div>
 
-  <div class="wrap">
-    <div class="frame">
-      <div class="top">
-        <div class="badge">💛 Amistad • 14F</div>
-        <div class="mini" id="progress">1/4</div>
+  <main class="wrap">
+    <header>
+      <div class="badge">Para <strong id="toName">Mi amiga</strong> 💙</div>
+      <button class="btn" id="muteBtn">🔊</button>
+    </header>
+
+    <section class="card">
+      <div>
+        <h1 class="title">Te hice esto porque te lo mereces.</h1>
+        <p class="sub">Es una mini carta interactiva. Toca o desliza para avanzar.</p>
       </div>
 
-      <div class="stage" id="stage">
-        <div>
-          <h1 class="text" id="mainText"></h1>
-          <div class="sub" id="subText"></div>
+      <div class="slides" id="slides">
+        <!-- Slides se inyectan con JS -->
+      </div>
+
+      <footer>
+        <div class="dots" id="dots"></div>
+        <div class="nav">
+          <button class="btn" id="prevBtn">←</button>
+          <button class="btn" id="nextBtn">→</button>
         </div>
-      </div>
+      </footer>
+    </section>
 
-      <div class="footer">
-        <button class="primary" id="btnNext">👉 Siguiente</button>
-        <button id="btnReplay">🔁 Repetir</button>
-        <button id="btnCopy">📋 Copiar frase</button>
-      </div>
+    <div class="badge" style="justify-content:center">
+      <span id="progress">1/5</span>
+      <span style="opacity:.6">·</span>
+      <span>Hecho con cariño ✨</span>
+    </div>
+  </main>
 
-      <div class="note">Tip: toca “Siguiente” o toca la pantalla ✨</div>
+  <div class="gate" id="gate">
+    <div class="gateCard">
+      <div class="kicker">Mensaje secreto</div>
+      <h2 class="big">¿Lista? 💌</h2>
+      <p class="small">Esto funciona en iPhone y Android desde el navegador. Si quieres, lo puedes “agregar a pantalla de inicio”.</p>
+      <button class="cta" id="openBtn">Abrir</button>
+      <div class="hint">Tip: desliza (swipe) izquierda/derecha</div>
     </div>
   </div>
 
+  <audio id="bgm" preload="auto" loop>
+    <!-- Puedes reemplazar por tu audio si lo subes junto al html -->
+  </audio>
+
   <script>
-    // Personaliza aquí:
-    const FRIEND = "Ale"; // o "Xmiau" si quieres que salga así
+    // === Personaliza aquí ===
+    const CONFIG = {
+      toName: "Mi amiga",
+      slides: [
+        { k: "Hola", h: "Te quería decir algo…", p: "Gracias por ser tú. No tienes idea de lo bonito que es tenerte cerca." },
+        { k: "Verdad", h: "Eres importante", p: "Aunque a veces no lo parezca, tu presencia cambia el día de las personas que te quieren." },
+        { k: "Orgullo", h: "Me encanta verte crecer", p: "Tu esfuerzo, tu forma de pensar y tu corazón… todo eso vale muchísimo." },
+        { k: "Promesa", h: "Aquí estoy", p: "En días buenos y en días raros. No estás sola, ¿ok?" },
+        { k: "Final", h: "Te quiero 💙", p: "Si llegaste hasta aquí, te ganaste un abrazo infinito. (Toca para repetir)" },
+      ],
+      // corazones por segundo aprox
+      heartRate: 1.6,
+      // true si quieres vibración (Android; iPhone es limitado)
+      haptics: true,
+    };
 
-    const slides = [
-      {
-        main: `Ey ${FRIEND} 😌`,
-        sub: `Hoy no vengo romántico… vengo en modo “me caes bien y qué”.`
-      },
-      {
-        main: `Feliz 14 💛😂`,
-        sub: `Que nadie te diga que el 14 es solo parejas… también existe el amor de compas (y el chisme).`
-      },
-      {
-        main: `Gracias por aguantarme 🙃`,
-        sub: `Por las risas, por las locuras y por entender mis ideas raras sin llamar a la policía.`
-      },
-      {
-        main: `Te aprecio un montón 🫶✨`,
-        sub: `Y si alguien te molesta hoy… dime y le mando un “buenas vibras” bien agresivo.`
-      }
-    ];
+    const $ = (s) => document.querySelector(s);
+    const fx = $("#fx");
+    const slidesEl = $("#slides");
+    const dotsEl = $("#dots");
+    const progressEl = $("#progress");
+    const toNameEl = $("#toName");
 
-    const stage = document.getElementById("stage");
-    const mainText = document.getElementById("mainText");
-    const subText  = document.getElementById("subText");
-    const progress = document.getElementById("progress");
-    const float = document.getElementById("float");
+    const gate = $("#gate");
+    const openBtn = $("#openBtn");
 
-    const btnNext = document.getElementById("btnNext");
-    const btnReplay = document.getElementById("btnReplay");
-    const btnCopy = document.getElementById("btnCopy");
+    const prevBtn = $("#prevBtn");
+    const nextBtn = $("#nextBtn");
 
-    let i = 0;
+    const muteBtn = $("#muteBtn");
+    const bgm = $("#bgm");
 
-    function render(idx, mode="show"){
-      const s = slides[idx];
-      mainText.textContent = s.main;
-      subText.textContent  = s.sub;
-      progress.textContent = `${idx+1}/${slides.length}`;
+    let idx = 0;
+    let muted = true;
 
-      stage.classList.remove("show","hide");
-      void stage.offsetWidth; // reflow
-      stage.classList.add(mode);
-      stage.classList.add("show");
+    toNameEl.textContent = CONFIG.toName;
 
-      popHearts(10);
-    }
+    // Render slides + dots
+    const slideNodes = CONFIG.slides.map((s, i) => {
+      const d = document.createElement("div");
+      d.className = "slide" + (i === 0 ? " active" : "");
+      d.innerHTML = `
+        <div class="kicker">${s.k}</div>
+        <h3 class="h">${s.h}</h3>
+        <p class="p">${s.p}</p>
+      `;
+      slidesEl.appendChild(d);
 
-    function next(){
-      stage.classList.remove("show");
-      stage.classList.add("hide");
-      setTimeout(()=>{
-        i = (i + 1) % slides.length;
-        render(i, "show");
-      }, 280);
-    }
+      const dot = document.createElement("div");
+      dot.className = "dot" + (i === 0 ? " on" : "");
+      dotsEl.appendChild(dot);
 
-    function replay(){
-      i = 0;
-      render(i, "show");
-      popHearts(18);
-    }
-
-    async function copyCurrent(){
-      const s = slides[i];
-      const text = `${s.main}\n${s.sub}`;
-      try{
-        await navigator.clipboard.writeText(text);
-        popHearts(14);
-      }catch(e){
-        // iOS a veces bloquea; igual se queda bonito sin copiar
-      }
-    }
-
-    btnNext.addEventListener("click", next);
-    btnReplay.addEventListener("click", replay);
-    btnCopy.addEventListener("click", copyCurrent);
-
-    // Tocar en pantalla avanza (tipo TikTok)
-    document.addEventListener("click", (e)=>{
-      // evita que el click en botones dispare doble
-      if(e.target.tagName.toLowerCase() === "button") return;
-      next();
+      return d;
     });
 
-    // Corazones flotando
-    const hearts = ["💛","✨","😂","🫶","💫","🌟"];
-    function popHearts(n){
-      for(let k=0;k<n;k++){
-        const h = document.createElement("div");
-        h.className = "h";
-        h.textContent = hearts[Math.floor(Math.random()*hearts.length)];
-        const left = Math.random()*100;
-        const dur = 2.8 + Math.random()*2.2;
-        const dx  = (Math.random()*120 - 60).toFixed(0) + "px";
-        const size = 14 + Math.random()*16;
-
-        h.style.left = left + "vw";
-        h.style.fontSize = size + "px";
-        h.style.animationDuration = dur + "s";
-        h.style.setProperty("--dx", dx);
-
-        float.appendChild(h);
-        setTimeout(()=> h.remove(), dur*1000 + 200);
-      }
+    function vibrate(ms=18){
+      if (!CONFIG.haptics) return;
+      if (navigator.vibrate) navigator.vibrate(ms);
     }
 
-    // init
-    render(i, "show");
+    function setIndex(n){
+      const N = slideNodes.length;
+      let next = n;
+
+      // Si está en la última y toca avanzar, reinicia
+      if (idx === N - 1 && n >= N) next = 0;
+      if (next < 0) next = 0;
+      if (next >= N) next = N - 1;
+
+      slideNodes.forEach((node, i) => {
+        node.classList.toggle("active", i === next);
+        node.classList.toggle("prev", i < next);
+      });
+      [...dotsEl.children].forEach((d, i) => d.classList.toggle("on", i === next));
+
+      idx = next;
+      progressEl.textContent = `${idx + 1}/${N}`;
+      vibrate(12);
+    }
+
+    function next(){ setIndex(idx + 1); }
+    function prev(){ setIndex(idx - 1); }
+
+    nextBtn.addEventListener("click", next);
+    prevBtn.addEventListener("click", prev);
+
+    // Tap en el área para avanzar
+    slidesEl.addEventListener("click", () => {
+      // si es la última, reinicia (queda “cute”)
+      if (idx === slideNodes.length - 1) setIndex(slideNodes.length);
+      else next();
+    });
+
+    // Swipe (touch)
+    let x0 = null;
+    slidesEl.addEventListener("touchstart", (e) => { x0 = e.touches[0].clientX; }, {passive:true});
+    slidesEl.addEventListener("touchend", (e) => {
+      if (x0 == null) return;
+      const x1 = e.changedTouches[0].clientX;
+      const dx = x1 - x0;
+      x0 = null;
+      if (Math.abs(dx) < 35) return;
+      dx < 0 ? next() : prev();
+    }, {passive:true});
+
+    // Corazones
+    function spawnHeart(){
+      const h = document.createElement("div");
+      h.className = "heart";
+      const left = Math.random() * 100;
+      const size = 10 + Math.random() * 18;
+      const dur = 4 + Math.random() * 3.5;
+      const hue = 210 + Math.random() * 70; // azules/morados
+      h.style.left = left + "vw";
+      h.style.width = h.style.height = size + "px";
+      h.style.animationDuration = dur + "s";
+      h.style.color = `hsl(${hue} 90% 70%)`;
+      fx.appendChild(h);
+      setTimeout(() => h.remove(), dur * 1000);
+    }
+    setInterval(spawnHeart, 1000 / CONFIG.heartRate);
+
+    // Gate abrir
+    openBtn.addEventListener("click", async () => {
+      gate.classList.add("hidden");
+      vibrate(20);
+      // audio (si algún día agregas un src)
+      try{
+        if (!muted && bgm.src) await bgm.play();
+      }catch(_){}
+    });
+
+    // Mute button
+    muteBtn.addEventListener("click", async () => {
+      muted = !muted;
+      muteBtn.textContent = muted ? "🔇" : "🔊";
+      vibrate(10);
+      try{
+        if (!muted && bgm.src) await bgm.play();
+        if (muted) bgm.pause();
+      }catch(_){}
+    });
+
+    // Estado inicial
+    muteBtn.textContent = muted ? "🔇" : "🔊";
+    progressEl.textContent = `1/${slideNodes.length}`;
   </script>
 </body>
 </html>
