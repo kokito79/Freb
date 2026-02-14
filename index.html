@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Feliz 14 💖</title>
+  <style>
+    :root{
+      --bg1:#120016;
+      --bg2:#2b0033;
+      --card:#ffffff12;
+      --card2:#ffffff1c;
+      --txt:#fff;
+      --soft:#ffffffcc;
+      --accent:#ff4d8d;
+      --accent2:#ff86b3;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--txt); }
+    body{
+      overflow:hidden;
+      background:
+        radial-gradient(1200px 700px at 20% 10%, #ff2e7a33, transparent 60%),
+        radial-gradient(900px 600px at 80% 20%, #9b5cff33, transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      display:grid;
+      place-items:center;
+      padding:20px;
+    }
+
+    .wrap{
+      width:min(560px, 100%);
+      position:relative;
+      z-index:2;
+    }
+
+    .card{
+      background: linear-gradient(135deg, var(--card), var(--card2));
+      border: 1px solid #ffffff24;
+      border-radius: 22px;
+      padding: 22px 18px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 50px #00000055;
+    }
+
+    .top{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      margin-bottom:14px;
+    }
+
+    .heart{
+      width:56px; height:56px;
+      border-radius:16px;
+      display:grid; place-items:center;
+      background: radial-gradient(circle at 30% 30%, #ffffff33, transparent 55%),
+                  linear-gradient(135deg, #ff3d7f, #b44cff);
+      box-shadow: 0 10px 30px #ff2e7a33;
+      animation: pulse 1.4s infinite ease-in-out;
+      user-select:none;
+      font-size:26px;
+    }
+
+    @keyframes pulse{
+      0%,100%{ transform: scale(1); }
+      50%{ transform: scale(1.08); }
+    }
+
+    h1{
+      margin:0;
+      font-size: 22px;
+      line-height:1.15;
+      letter-spacing: .2px;
+    }
+
+    .sub{
+      margin:4px 0 0;
+      color: var(--soft);
+      font-size: 13px;
+    }
+
+    .msg{
+      margin: 14px 0 0;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #ffffffea;
+      white-space: pre-wrap;
+    }
+
+    .controls{
+      margin-top:16px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    button{
+      border: 1px solid #ffffff2a;
+      background: #ffffff12;
+      color: var(--txt);
+      padding: 11px 13px;
+      border-radius: 14px;
+      font-size: 14px;
+      cursor:pointer;
+      transition: transform .06s ease, background .2s ease;
+      user-select:none;
+    }
+    button:active{ transform: scale(.98); }
+    button.primary{
+      border-color: #ff6aa53d;
+      background: linear-gradient(135deg, #ff4d8d, #b44cff);
+      box-shadow: 0 10px 24px #ff2e7a33;
+    }
+
+    .hint{
+      margin-top:10px;
+      font-size:12px;
+      color:#ffffffb8;
+    }
+
+    /* corazones flotando */
+    .float-layer{
+      position:fixed;
+      inset:0;
+      overflow:hidden;
+      pointer-events:none;
+      z-index:1;
+    }
+    .fheart{
+      position:absolute;
+      bottom:-40px;
+      font-size: 18px;
+      opacity:.0;
+      filter: drop-shadow(0 6px 10px #00000055);
+      animation: rise linear forwards;
+    }
+    @keyframes rise{
+      0%{ transform: translateY(0) translateX(0) scale(.9) rotate(0deg); opacity:0; }
+      10%{ opacity:.85; }
+      100%{ transform: translateY(-120vh) translateX(var(--drift)) scale(1.25) rotate(var(--rot)); opacity:0; }
+    }
+
+    /* confetti suave */
+    canvas{ position:fixed; inset:0; z-index:0; }
+    .credit{
+      margin-top:10px;
+      text-align:center;
+      font-size:11px;
+      color:#ffffff80;
+    }
+
+    a{ color:#fff; }
+  </style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <div class="float-layer" id="floatLayer"></div>
+
+  <div class="wrap">
+    <div class="card">
+      <div class="top">
+        <div class="heart">💖</div>
+        <div>
+          <h1 id="title">Feliz 14 de febrero</h1>
+          <div class="sub" id="subtitle">Hecho con cariño, solo para ti ✨</div>
+        </div>
+      </div>
+
+      <div class="msg" id="msg"></div>
+
+      <div class="controls">
+        <button class="primary" id="btnSurprise">🎁 Sorpresa</button>
+        <button id="btnChange">💌 Cambiar mensaje</button>
+        <button id="btnCopy">📋 Copiar texto</button>
+      </div>
+
+      <div class="hint">Tip: Si quieres personalizar, edita el nombre en el código (busca <b>NAME_HERE</b>).</div>
+    </div>
+
+    <div class="credit">💞</div>
+  </div>
+
+<script>
+  // ====== PERSONALIZA AQUÍ ======
+  const TO_NAME = "NAME_HERE"; // Ej: "Fer" o "María"
+  // ==============================
+
+  const messages = [
+`Hola ${TO_NAME === "NAME_HERE" ? "✨" : TO_NAME} 💕
+Hoy solo quería recordarte que tu presencia alegra un montón.
+Que este 14 sea bonito, tranquilo y lleno de cosas buenas.
+Te mando un abrazo enorme y un corazón extra: 💖`,
+
+`Para ${TO_NAME === "NAME_HERE" ? "ti" : TO_NAME}:
+Eres de esas personas que se sienten como un lugar seguro.
+Gracias por existir.
+Feliz 14 de febrero 💘`,
+
+`Si hoy te regalan flores…
+yo te mando un jardín completo 🌷🌸🌼
+Feliz 14, ${TO_NAME === "NAME_HERE" ? "bonita persona" : TO_NAME} 💖`
+  ];
+
+  const msgEl = document.getElementById("msg");
+  const btnChange = document.getElementById("btnChange");
+  const btnCopy = document.getElementById("btnCopy");
+  const btnSurprise = document.getElementById("btnSurprise");
+
+  let idx = Math.floor(Math.random() * messages.length);
+  function setMsg(i){ msgEl.textContent = messages[i]; }
+  setMsg(idx);
+
+  btnChange.addEventListener("click", () => {
+    idx = (idx + 1) % messages.length;
+    setMsg(idx);
+    popHearts(10);
+  });
+
+  btnCopy.addEventListener("click", async () => {
+    try{
+      await navigator.clipboard.writeText(msgEl.textContent);
+      toast("Texto copiado ✅");
+    }catch(e){
+      toast("No pude copiar 😅 (mantén presionado y copia)");
+    }
+  });
+
+  btnSurprise.addEventListener("click", () => {
+    popHearts(30);
+    burstConfetti();
+    toast("Sorpresa 💖");
+  });
+
+  // ===== Toast simple =====
+  let toastTimer;
+  function toast(text){
+    clearTimeout(toastTimer);
+    let t = document.getElementById("toast");
+    if(!t){
+      t = document.createElement("div");
+      t.id = "toast";
+      t.style.position = "fixed";
+      t.style.left = "50%";
+      t.style.bottom = "26px";
+      t.style.transform = "translateX(-50%)";
+      t.style.padding = "10px 14px";
+      t.style.borderRadius = "14px";
+      t.style.background = "#00000066";
+      t.style.border = "1px solid #ffffff2a";
+      t.style.backdropFilter = "blur(8px)";
+      t.style.zIndex = "3";
+      t.style.fontSize = "13px";
+      t.style.color = "#fff";
+      document.body.appendChild(t);
+    }
+    t.textContent = text;
+    t.style.opacity = "1";
+    toastTimer = setTimeout(()=>{ t.style.opacity="0"; }, 1600);
+  }
+
+  // ===== Corazones flotando =====
+  const floatLayer = document.getElementById("floatLayer");
+  const heartChars = ["💗","💖","💘","💝","💕","💞"];
+  function popHearts(n){
+    for(let i=0;i<n;i++){
+      const h = document.createElement("div");
+      h.className = "fheart";
+      h.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+      const left = Math.random()*100;
+      const dur = 3.5 + Math.random()*2.5;
+      const delay = Math.random()*0.25;
+      const drift = (Math.random()*120 - 60).toFixed(0) + "px";
+      const rot = (Math.random()*120 - 60).toFixed(0) + "deg";
+      const size = 14 + Math.random()*18;
+
+      h.style.left = left + "vw";
+      h.style.fontSize = size + "px";
+      h.style.animationDuration = dur + "s";
+      h.style.animationDelay = delay + "s";
+      h.style.setProperty("--drift", drift);
+      h.style.setProperty("--rot", rot);
+
+      floatLayer.appendChild(h);
+      setTimeout(()=> h.remove(), (dur+delay)*1000 + 200);
+    }
+  }
+  // arranque suave
+  setInterval(()=> popHearts(2), 900);
+
+  // ===== Confetti canvas (ligero) =====
+  const canvas = document.getElementById("c");
+  const ctx = canvas.getContext("2d");
+  function resize(){
+    canvas.width = innerWidth * devicePixelRatio;
+    canvas.height = innerHeight * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  }
+  addEventListener("resize", resize); resize();
+
+  let confetti = [];
+  function burstConfetti(){
+    const count = 90;
+    const x = innerWidth/2, y = innerHeight/3;
+    for(let i=0;i<count;i++){
+      confetti.push({
+        x, y,
+        vx: (Math.random()*8 - 4),
+        vy: (Math.random()*-10 - 3),
+        g: 0.25 + Math.random()*0.15,
+        s: 3 + Math.random()*4,
+        a: 1,
+        r: Math.random()*Math.PI*2,
+        vr: (Math.random()*0.2 - 0.1)
+      });
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    for(const p of confetti){
+      p.vy += p.g;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.r += p.vr;
+      p.a *= 0.985;
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.r);
+      ctx.globalAlpha = Math.max(p.a,0);
+      // color suave variado sin hardcodear paleta fija (solo alternancia)
+      const hue = (Math.sin(p.x*0.01 + p.y*0.01) * 30) + 330;
+      ctx.fillStyle = `hsl(${hue} 90% 70%)`;
+      ctx.fillRect(-p.s/2, -p.s/2, p.s, p.s*1.6);
+      ctx.restore();
+    }
+    confetti = confetti.filter(p => p.a > 0.05 && p.y < innerHeight + 40);
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  // un pequeño gesto inicial
+  setTimeout(()=> { popHearts(12); burstConfetti(); }, 600);
+</script>
+</body>
+</html>
