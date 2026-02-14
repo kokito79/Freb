@@ -3,346 +3,686 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Feliz 14 💖</title>
+  <title>Para Ale ✨</title>
   <style>
     :root{
-      --bg1:#120016;
-      --bg2:#2b0033;
-      --card:#ffffff12;
-      --card2:#ffffff1c;
-      --txt:#fff;
-      --soft:#ffffffcc;
-      --accent:#ff4d8d;
-      --accent2:#ff86b3;
+      --bg0:#050511;
+      --bg1:#090822;
+      --bg2:#120b3b;
+      --txt:#ffffff;
+      --soft:#ffffffc7;
+      --glass:#ffffff14;
+      --glass2:#ffffff22;
+      --stroke:#ffffff2a;
+      --pink:#ff5fa2;
+      --violet:#8b5cff;
+      --cyan:#2fe7ff;
+      --shadow: 0 30px 80px rgba(0,0,0,.55);
     }
 
     *{ box-sizing:border-box; }
-    html,body{ height:100%; margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--txt); }
+    html,body{ height:100%; margin:0; }
     body{
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--txt);
+      background: radial-gradient(1200px 900px at 20% 15%, rgba(255,95,162,.18), transparent 60%),
+                  radial-gradient(1000px 800px at 80% 30%, rgba(139,92,255,.18), transparent 60%),
+                  radial-gradient(900px 700px at 50% 80%, rgba(47,231,255,.10), transparent 60%),
+                  linear-gradient(180deg, var(--bg0), var(--bg2));
       overflow:hidden;
+      touch-action: pan-y;
+    }
+
+    /* === Escena 3D (parallax) === */
+    .scene{
+      position:fixed; inset:0;
+      perspective: 900px;
+      transform-style: preserve-3d;
+    }
+    .layer{
+      position:absolute; inset:-10%;
+      transform-style:preserve-3d;
+      will-change: transform;
+      pointer-events:none;
+    }
+
+    /* Nebulosas (manchas suaves) */
+    .nebula{
       background:
-        radial-gradient(1200px 700px at 20% 10%, #ff2e7a33, transparent 60%),
-        radial-gradient(900px 600px at 80% 20%, #9b5cff33, transparent 60%),
-        linear-gradient(180deg, var(--bg1), var(--bg2));
-      display:grid;
-      place-items:center;
-      padding:20px;
+        radial-gradient(closest-side at 20% 30%, rgba(255,95,162,.22), transparent 60%),
+        radial-gradient(closest-side at 70% 35%, rgba(139,92,255,.20), transparent 60%),
+        radial-gradient(closest-side at 55% 80%, rgba(47,231,255,.10), transparent 60%);
+      filter: blur(18px);
+      opacity:.9;
+      mix-blend-mode: screen;
     }
 
-    .wrap{
-      width:min(560px, 100%);
+    /* Brillo/ruido */
+    .glow{
+      background:
+        radial-gradient(600px 400px at 50% 50%, rgba(255,255,255,.10), transparent 60%),
+        radial-gradient(500px 300px at 30% 60%, rgba(255,255,255,.06), transparent 60%);
+      filter: blur(10px);
+      opacity:.7;
+    }
+
+    canvas#stars, canvas#dust{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      display:block;
+      pointer-events:none;
+    }
+
+    /* === UI === */
+    .ui{
       position:relative;
-      z-index:2;
+      z-index:5;
+      height:100%;
+      display:grid;
+      grid-template-rows: auto 1fr auto;
+      padding: 18px 16px 22px;
+      gap: 12px;
     }
 
-    .card{
-      background: linear-gradient(135deg, var(--card), var(--card2));
-      border: 1px solid #ffffff24;
-      border-radius: 22px;
-      padding: 22px 18px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 20px 50px #00000055;
-    }
-
-    .top{
+    .topbar{
       display:flex;
       align-items:center;
-      gap:14px;
-      margin-bottom:14px;
-    }
-
-    .heart{
-      width:56px; height:56px;
-      border-radius:16px;
-      display:grid; place-items:center;
-      background: radial-gradient(circle at 30% 30%, #ffffff33, transparent 55%),
-                  linear-gradient(135deg, #ff3d7f, #b44cff);
-      box-shadow: 0 10px 30px #ff2e7a33;
-      animation: pulse 1.4s infinite ease-in-out;
-      user-select:none;
-      font-size:26px;
-    }
-
-    @keyframes pulse{
-      0%,100%{ transform: scale(1); }
-      50%{ transform: scale(1.08); }
-    }
-
-    h1{
-      margin:0;
-      font-size: 22px;
-      line-height:1.15;
-      letter-spacing: .2px;
-    }
-
-    .sub{
-      margin:4px 0 0;
-      color: var(--soft);
-      font-size: 13px;
-    }
-
-    .msg{
-      margin: 14px 0 0;
-      font-size: 15px;
-      line-height: 1.5;
-      color: #ffffffea;
-      white-space: pre-wrap;
-    }
-
-    .controls{
-      margin-top:16px;
-      display:flex;
+      justify-content:space-between;
       gap:10px;
-      flex-wrap:wrap;
+      padding: 12px 14px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--glass), var(--glass2));
+      border:1px solid var(--stroke);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 12px 30px rgba(0,0,0,.35);
+    }
+    .brand{
+      display:flex; flex-direction:column;
+      line-height:1.1;
+    }
+    .brand .t1{
+      font-weight:750;
+      letter-spacing:.2px;
+      font-size: 15px;
+    }
+    .brand .t2{
+      font-size: 12px;
+      color: var(--soft);
+      margin-top:3px;
+    }
+    .chip{
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: #00000022;
+      border:1px solid #ffffff22;
+      font-size:12px;
+      color:#ffffffde;
+      user-select:none;
+      display:flex;
+      align-items:center;
+      gap:6px;
     }
 
-    button{
-      border: 1px solid #ffffff2a;
-      background: #ffffff12;
-      color: var(--txt);
-      padding: 11px 13px;
-      border-radius: 14px;
-      font-size: 14px;
-      cursor:pointer;
-      transition: transform .06s ease, background .2s ease;
-      user-select:none;
-    }
-    button:active{ transform: scale(.98); }
-    button.primary{
-      border-color: #ff6aa53d;
-      background: linear-gradient(135deg, #ff4d8d, #b44cff);
-      box-shadow: 0 10px 24px #ff2e7a33;
+    /* Área de mensajes flotantes */
+    .field{
+      position:relative;
+      border-radius: 22px;
+      border:1px solid #ffffff1f;
+      background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      min-height: 380px;
     }
 
     .hint{
-      margin-top:10px;
-      font-size:12px;
-      color:#ffffffb8;
-    }
-
-    /* corazones flotando */
-    .float-layer{
-      position:fixed;
-      inset:0;
-      overflow:hidden;
-      pointer-events:none;
-      z-index:1;
-    }
-    .fheart{
       position:absolute;
-      bottom:-40px;
+      left:14px; right:14px; top:14px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      pointer-events:none;
+      z-index:2;
+    }
+    .hint .text{
+      font-size:12px;
+      color:#ffffffc8;
+      background:#00000022;
+      border:1px solid #ffffff1f;
+      padding:9px 10px;
+      border-radius: 14px;
+      max-width: 75%;
+      backdrop-filter: blur(8px);
+    }
+    .hint .mini{
+      font-size:12px;
+      padding:9px 10px;
+      border-radius:14px;
+      background:#00000022;
+      border:1px solid #ffffff1f;
+      color:#ffffffc8;
+      backdrop-filter: blur(8px);
+      white-space:nowrap;
+    }
+
+    .bubble{
+      position:absolute;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border:1px solid #ffffff2a;
+      background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+      box-shadow: 0 18px 40px rgba(0,0,0,.35);
+      backdrop-filter: blur(10px);
+      cursor:pointer;
+      user-select:none;
+      will-change: transform;
+      transform: translate3d(0,0,0);
+      transition: transform .12s ease;
+    }
+    .bubble:active{ transform: scale(.98); }
+
+    .emoji{
       font-size: 18px;
-      opacity:.0;
-      filter: drop-shadow(0 6px 10px #00000055);
-      animation: rise linear forwards;
+      filter: drop-shadow(0 10px 16px rgba(0,0,0,.35));
     }
-    @keyframes rise{
-      0%{ transform: translateY(0) translateX(0) scale(.9) rotate(0deg); opacity:0; }
-      10%{ opacity:.85; }
-      100%{ transform: translateY(-120vh) translateX(var(--drift)) scale(1.25) rotate(var(--rot)); opacity:0; }
+    .label{
+      font-size: 13px;
+      color:#ffffffef;
+      letter-spacing:.15px;
     }
 
-    /* confetti suave */
-    canvas{ position:fixed; inset:0; z-index:0; }
-    .credit{
-      margin-top:10px;
-      text-align:center;
-      font-size:11px;
-      color:#ffffff80;
+    /* Footer */
+    .footer{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+    button{
+      border:1px solid #ffffff26;
+      background: #ffffff12;
+      color:var(--txt);
+      padding: 12px 14px;
+      border-radius: 16px;
+      font-size: 14px;
+      cursor:pointer;
+      user-select:none;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 24px rgba(0,0,0,.25);
+      transition: transform .06s ease;
+    }
+    button:active{ transform: scale(.98); }
+    button.primary{
+      border-color:#ff5fa255;
+      background: linear-gradient(135deg, rgba(255,95,162,.95), rgba(139,92,255,.92));
     }
 
-    a{ color:#fff; }
+    /* Modal carta */
+    .modal{
+      position:fixed; inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 50;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(8px);
+    }
+    .modal.show{ display:flex; }
+    .card{
+      width: min(520px, 100%);
+      border-radius: 22px;
+      border:1px solid #ffffff2a;
+      background: linear-gradient(135deg, rgba(255,255,255,.14), rgba(255,255,255,.08));
+      box-shadow: 0 30px 90px rgba(0,0,0,.6);
+      padding: 18px 16px 14px;
+      position:relative;
+      overflow:hidden;
+    }
+    .card::before{
+      content:"";
+      position:absolute; inset:-40%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,95,162,.26), transparent 55%),
+                  radial-gradient(circle at 70% 35%, rgba(139,92,255,.22), transparent 55%),
+                  radial-gradient(circle at 45% 80%, rgba(47,231,255,.12), transparent 55%);
+      filter: blur(18px);
+      opacity:.8;
+      transform: rotate(8deg);
+      pointer-events:none;
+    }
+    .card > *{ position:relative; z-index:2; }
+
+    .cardTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .tag{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background:#00000022;
+      border:1px solid #ffffff1f;
+      font-size:12px;
+      color:#ffffffde;
+    }
+    .close{
+      border:none;
+      background:#00000030;
+      color:#fff;
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      cursor:pointer;
+      border:1px solid #ffffff20;
+    }
+    .title{
+      margin: 8px 0 6px;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing:.2px;
+    }
+    .text{
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.55;
+      color:#ffffffeb;
+      white-space: pre-wrap;
+    }
+    .sig{
+      margin-top: 12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      color:#ffffffb8;
+      font-size:12px;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.55);
+      border:1px solid #ffffff24;
+      padding: 10px 12px;
+      border-radius: 16px;
+      color:#fff;
+      font-size: 13px;
+      backdrop-filter: blur(10px);
+      z-index: 60;
+      opacity:0;
+      transition: opacity .2s ease;
+      pointer-events:none;
+    }
+    .toast.show{ opacity:1; }
+
+    /* Accesibilidad en pantallas pequeñas */
+    @media (max-height: 700px){
+      .field{ min-height: 330px; }
+    }
   </style>
 </head>
+
 <body>
-  <canvas id="c"></canvas>
-  <div class="float-layer" id="floatLayer"></div>
-
-  <div class="wrap">
-    <div class="card">
-      <div class="top">
-        <div class="heart">💖</div>
-        <div>
-          <h1 id="title">Feliz 14 de febrero</h1>
-          <div class="sub" id="subtitle">Hecho con cariño, solo para ti ✨</div>
-        </div>
-      </div>
-
-      <div class="msg" id="msg"></div>
-
-      <div class="controls">
-        <button class="primary" id="btnSurprise">🎁 Sorpresa</button>
-        <button id="btnChange">💌 Cambiar mensaje</button>
-        <button id="btnCopy">📋 Copiar texto</button>
-      </div>
-
-      <div class="hint">Tip: Si quieres personalizar, edita el nombre en el código (busca <b>NAME_HERE</b>).</div>
-    </div>
-
-    <div class="credit">💞</div>
+  <div class="scene" id="scene">
+    <div class="layer nebula" id="layer1"></div>
+    <canvas id="stars"></canvas>
+    <canvas id="dust"></canvas>
+    <div class="layer glow" id="layer2"></div>
   </div>
 
+  <div class="ui">
+    <div class="topbar">
+      <div class="brand">
+        <div class="t1">Para Ale ✨</div>
+        <div class="t2">Xmiau edition • toca los mensajes</div>
+      </div>
+      <div class="chip">🌌 <span id="chipText">Galaxia</span></div>
+    </div>
+
+    <div class="field" id="field">
+      <div class="hint">
+        <div class="text">Toca cualquier burbuja 💬 para abrir una cartita. (Se mueven como en el espacio 🌠)</div>
+        <div class="mini" id="counter">0/0</div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <button class="primary" id="btnShuffle">✨ Reordenar</button>
+      <button id="btnMore">➕ Más mensajes</button>
+      <button id="btnCopy">📋 Copiar una carta</button>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="card" role="dialog" aria-modal="true" aria-label="Carta">
+      <div class="cardTop">
+        <div class="tag" id="tag">💌 Carta</div>
+        <button class="close" id="close" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="title" id="mTitle">…</div>
+      <p class="text" id="mText"></p>
+      <div class="sig">
+        <span id="mFoot">Hecho con cariño 💖</span>
+        <span id="mEmoji">🌙</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Copiado ✅</div>
+
 <script>
-  // ====== PERSONALIZA AQUÍ ======
-  const TO_NAME = "NAME_HERE"; // Ej: "Fer" o "María"
-  // ==============================
+  // ====== Personaliza ======
+  const NAME_SHORT = "Ale";
+  const ART_NAME  = "Xmiau";
+  // =========================
 
-  const messages = [
-`Hola ${TO_NAME === "NAME_HERE" ? "✨" : TO_NAME} 💕
-Hoy solo quería recordarte que tu presencia alegra un montón.
-Que este 14 sea bonito, tranquilo y lleno de cosas buenas.
-Te mando un abrazo enorme y un corazón extra: 💖`,
+  const field = document.getElementById("field");
+  const counter = document.getElementById("counter");
+  const chipText = document.getElementById("chipText");
 
-`Para ${TO_NAME === "NAME_HERE" ? "ti" : TO_NAME}:
-Eres de esas personas que se sienten como un lugar seguro.
-Gracias por existir.
-Feliz 14 de febrero 💘`,
+  const modal = document.getElementById("modal");
+  const closeBtn = document.getElementById("close");
+  const tagEl = document.getElementById("tag");
+  const mTitle = document.getElementById("mTitle");
+  const mText  = document.getElementById("mText");
+  const mFoot  = document.getElementById("mFoot");
+  const mEmoji = document.getElementById("mEmoji");
+  const toastEl = document.getElementById("toast");
 
-`Si hoy te regalan flores…
-yo te mando un jardín completo 🌷🌸🌼
-Feliz 14, ${TO_NAME === "NAME_HERE" ? "bonita persona" : TO_NAME} 💖`
+  const btnShuffle = document.getElementById("btnShuffle");
+  const btnMore = document.getElementById("btnMore");
+  const btnCopy = document.getElementById("btnCopy");
+
+  // Mensajes flotantes (cada uno abre una carta)
+  const baseNotes = [
+    { emoji:"💖", label:"Para ti", title:`Hola, ${NAME_SHORT} ✨`, text:`Hoy solo vengo a decirte algo simple:\n\nTu energía se nota, tu presencia se siente.\nGracias por ser tú.\n\nFeliz 14, ${NAME_SHORT} 💖`, foot:`— ${ART_NAME} vibes`, tag:"💌 Carta 01" },
+    { emoji:"🌙", label:"Un secretito", title:`Pequeño secreto`, text:`Cuando el mundo se pone pesado, pensar en ti lo vuelve más suave.\n\nNo sé cómo lo haces, pero calmas.\nFeliz 14, ${NAME_SHORT} 🌙`, foot:`Con cariño`, tag:"💌 Carta 02" },
+    { emoji:"🐾", label:"Modo Xmiau", title:`Modo ${ART_NAME} activado 🐾`, text:`Si el 14 fuera un emoji, sería uno que te quede:\n✨ + 😌 + 💘\n\nEres magia tranquila, ${NAME_SHORT}.`, foot:`miau miau 🐾`, tag:"💌 Carta 03" },
+    { emoji:"🌌", label:"Galaxia", title:`En esta galaxia…`, text:`Hay estrellas, hay planetas…\nY hay personas que brillan diferente.\n\nTú eres de esas, ${NAME_SHORT}.`, foot:`Te mando luz ✨`, tag:"💌 Carta 04" },
+    { emoji:"😂", label:"Coquetito", title:`Oferta limitada 😏`, text:`Cupón del día:\n\n1 abrazo + 1 sonrisa + 1 “me caes demasiado bien”\nVálido solo para ${NAME_SHORT} 💘`, foot:`No reembolsable`, tag:"💌 Carta 05" },
+    { emoji:"🫶", label:"Gracias", title:`Gracias, Ale`, text:`Gracias por existir como existes.\nPor tu forma.\nPor tu esencia.\n\nFeliz 14 🫶`, foot:`Siempre bonito`, tag:"💌 Carta 06" },
   ];
 
-  const msgEl = document.getElementById("msg");
-  const btnChange = document.getElementById("btnChange");
-  const btnCopy = document.getElementById("btnCopy");
-  const btnSurprise = document.getElementById("btnSurprise");
+  let notes = [...baseNotes];
+  let openedCount = 0;
 
-  let idx = Math.floor(Math.random() * messages.length);
-  function setMsg(i){ msgEl.textContent = messages[i]; }
-  setMsg(idx);
+  function updateCounter(){
+    counter.textContent = `${openedCount}/${notes.length}`;
+  }
 
-  btnChange.addEventListener("click", () => {
-    idx = (idx + 1) % messages.length;
-    setMsg(idx);
-    popHearts(10);
-  });
+  // Crear burbujas con física simple (rebote + drift)
+  const bubbles = [];
+  const rand = (a,b)=> a + Math.random()*(b-a);
 
-  btnCopy.addEventListener("click", async () => {
-    try{
-      await navigator.clipboard.writeText(msgEl.textContent);
-      toast("Texto copiado ✅");
-    }catch(e){
-      toast("No pude copiar 😅 (mantén presionado y copia)");
+  function spawnBubbles(list){
+    const rect = field.getBoundingClientRect();
+    for(const n of list){
+      const el = document.createElement("div");
+      el.className = "bubble";
+      el.innerHTML = `<span class="emoji">${n.emoji}</span><span class="label">${n.label}</span>`;
+      field.appendChild(el);
+
+      // Posición inicial
+      const x = rand(30, rect.width - 160);
+      const y = rand(70, rect.height - 80);
+
+      // Velocidad
+      const vx = rand(-0.35, 0.35);
+      const vy = rand(-0.30, 0.30);
+
+      const b = {
+        note: n,
+        el,
+        x, y, vx, vy,
+        // efecto "profundidad"
+        z: rand(0.6, 1.2),
+        wobble: rand(0, Math.PI*2)
+      };
+
+      el.style.transform = `translate3d(${b.x}px, ${b.y}px, 0) scale(${b.z})`;
+      el.addEventListener("click", ()=> openLetter(b.note));
+      bubbles.push(b);
     }
-  });
+    updateCounter();
+  }
 
-  btnSurprise.addEventListener("click", () => {
-    popHearts(30);
-    burstConfetti();
-    toast("Sorpresa 💖");
-  });
+  function clearBubbles(){
+    for(const b of bubbles){ b.el.remove(); }
+    bubbles.length = 0;
+  }
 
-  // ===== Toast simple =====
+  function layoutAll(){
+    clearBubbles();
+    spawnBubbles(notes);
+    openedCount = 0;
+    updateCounter();
+  }
+
+  // Modal carta
+  function openLetter(note){
+    openedCount = Math.min(openedCount + 1, notes.length);
+    updateCounter();
+
+    tagEl.textContent = note.tag || "💌 Carta";
+    mTitle.textContent = note.title;
+    mText.textContent  = note.text;
+    mFoot.textContent  = note.foot || "Hecho con cariño 💖";
+    mEmoji.textContent = note.emoji || "💖";
+
+    modal.classList.add("show");
+    modal.setAttribute("aria-hidden","false");
+    chipText.textContent = "Carta abierta";
+  }
+
+  function closeLetter(){
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden","true");
+    chipText.textContent = "Galaxia";
+  }
+  closeBtn.addEventListener("click", closeLetter);
+  modal.addEventListener("click", (e)=>{ if(e.target === modal) closeLetter(); });
+  addEventListener("keydown", (e)=>{ if(e.key === "Escape") closeLetter(); });
+
+  // Toast
   let toastTimer;
-  function toast(text){
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
     clearTimeout(toastTimer);
-    let t = document.getElementById("toast");
-    if(!t){
-      t = document.createElement("div");
-      t.id = "toast";
-      t.style.position = "fixed";
-      t.style.left = "50%";
-      t.style.bottom = "26px";
-      t.style.transform = "translateX(-50%)";
-      t.style.padding = "10px 14px";
-      t.style.borderRadius = "14px";
-      t.style.background = "#00000066";
-      t.style.border = "1px solid #ffffff2a";
-      t.style.backdropFilter = "blur(8px)";
-      t.style.zIndex = "3";
-      t.style.fontSize = "13px";
-      t.style.color = "#fff";
-      document.body.appendChild(t);
-    }
-    t.textContent = text;
-    t.style.opacity = "1";
-    toastTimer = setTimeout(()=>{ t.style.opacity="0"; }, 1600);
+    toastTimer = setTimeout(()=> toastEl.classList.remove("show"), 1500);
   }
 
-  // ===== Corazones flotando =====
-  const floatLayer = document.getElementById("floatLayer");
-  const heartChars = ["💗","💖","💘","💝","💕","💞"];
-  function popHearts(n){
-    for(let i=0;i<n;i++){
-      const h = document.createElement("div");
-      h.className = "fheart";
-      h.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
-      const left = Math.random()*100;
-      const dur = 3.5 + Math.random()*2.5;
-      const delay = Math.random()*0.25;
-      const drift = (Math.random()*120 - 60).toFixed(0) + "px";
-      const rot = (Math.random()*120 - 60).toFixed(0) + "deg";
-      const size = 14 + Math.random()*18;
-
-      h.style.left = left + "vw";
-      h.style.fontSize = size + "px";
-      h.style.animationDuration = dur + "s";
-      h.style.animationDelay = delay + "s";
-      h.style.setProperty("--drift", drift);
-      h.style.setProperty("--rot", rot);
-
-      floatLayer.appendChild(h);
-      setTimeout(()=> h.remove(), (dur+delay)*1000 + 200);
+  // Copiar una carta aleatoria
+  btnCopy.addEventListener("click", async ()=>{
+    const pick = notes[Math.floor(Math.random()*notes.length)];
+    const text = `${pick.title}\n\n${pick.text}\n\n${pick.foot || ""}`;
+    try{
+      await navigator.clipboard.writeText(text);
+      toast("Carta copiada ✅");
+    }catch{
+      toast("No se pudo copiar 😅");
     }
-  }
-  // arranque suave
-  setInterval(()=> popHearts(2), 900);
+  });
 
-  // ===== Confetti canvas (ligero) =====
-  const canvas = document.getElementById("c");
-  const ctx = canvas.getContext("2d");
+  // Agregar más mensajes
+  btnMore.addEventListener("click", ()=>{
+    const extra = [
+      { emoji:"💫", label:"Brillas", title:`Brillas, ${NAME_SHORT}`, text:`No lo olvides:\n\nNo tienes que hacer ruido para brillar.\nTu forma de ser ya ilumina. 💫`, foot:`Con amor`, tag:"💌 Carta 07" },
+      { emoji:"🌷", label:"Dulce", title:`Un detalle`, text:`Esto es un mini detalle en formato galaxia.\n\nPorque tú mereces cosas bonitas, Ale 🌷`, foot:`Feliz 14`, tag:"💌 Carta 08" },
+      { emoji:"🪐", label:"Órbita", title:`En mi órbita`, text:`Hay gente que pasa…\nY gente que se queda en la mente como constelación.\n\nTú. 🪐`, foot:`✨`, tag:"💌 Carta 09" },
+    ];
+    notes = notes.concat(extra);
+    spawnBubbles(extra);
+    toast("Nuevos mensajes ✨");
+  });
+
+  // Reordenar
+  btnShuffle.addEventListener("click", ()=>{
+    layoutAll();
+    toast("Reordenado ✨");
+  });
+
+  // Animación "espacial"
+  let last = performance.now();
+  function tick(t){
+    const dt = Math.min(32, t - last);
+    last = t;
+
+    const rect = field.getBoundingClientRect();
+    const W = rect.width, H = rect.height;
+
+    for(const b of bubbles){
+      b.wobble += dt * 0.0015;
+      b.x += b.vx * dt * 0.06 * (1.3 - b.z);
+      b.y += b.vy * dt * 0.06 * (1.3 - b.z);
+
+      // drift suave
+      b.x += Math.sin(b.wobble) * 0.05;
+      b.y += Math.cos(b.wobble*0.9) * 0.05;
+
+      // límites
+      const bw = 160, bh = 44;
+      if(b.x < 8){ b.x = 8; b.vx *= -1; }
+      if(b.y < 56){ b.y = 56; b.vy *= -1; }
+      if(b.x > W - bw - 8){ b.x = W - bw - 8; b.vx *= -1; }
+      if(b.y > H - bh - 8){ b.y = H - bh - 8; b.vy *= -1; }
+
+      b.el.style.transform = `translate3d(${b.x}px, ${b.y}px, 0) scale(${b.z})`;
+    }
+
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  // Parallax “3D” con movimiento del dedo (iOS friendly)
+  const scene = document.getElementById("scene");
+  const layer1 = document.getElementById("layer1");
+  const layer2 = document.getElementById("layer2");
+
+  let px = 0, py = 0, tx = 0, ty = 0;
+
+  function setTargetFromPoint(x,y){
+    const nx = (x / innerWidth) * 2 - 1;
+    const ny = (y / innerHeight) * 2 - 1;
+    tx = nx; ty = ny;
+  }
+  addEventListener("mousemove", (e)=> setTargetFromPoint(e.clientX, e.clientY));
+  addEventListener("touchmove", (e)=>{
+    if(!e.touches?.length) return;
+    const t = e.touches[0];
+    setTargetFromPoint(t.clientX, t.clientY);
+  }, {passive:true});
+
+  function parallax(){
+    // suavizado
+    px += (tx - px) * 0.06;
+    py += (ty - py) * 0.06;
+
+    const r1 = `translate3d(${px*14}px, ${py*10}px, -120px)`;
+    const r2 = `translate3d(${px*8}px, ${py*6}px, -40px)`;
+    layer1.style.transform = r1;
+    layer2.style.transform = r2;
+
+    requestAnimationFrame(parallax);
+  }
+  requestAnimationFrame(parallax);
+
+  // Estrellas/Polvo (canvas)
+  const stars = document.getElementById("stars");
+  const dust  = document.getElementById("dust");
+  const sctx = stars.getContext("2d");
+  const dctx = dust.getContext("2d");
+
   function resize(){
-    canvas.width = innerWidth * devicePixelRatio;
-    canvas.height = innerHeight * devicePixelRatio;
-    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
-  }
-  addEventListener("resize", resize); resize();
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    for(const c of [stars, dust]){
+      c.width  = Math.floor(innerWidth * dpr);
+      c.height = Math.floor(innerHeight * dpr);
+      c.style.width = "100%";
+      c.style.height = "100%";
+    }
+    sctx.setTransform(dpr,0,0,dpr,0,0);
+    dctx.setTransform(dpr,0,0,dpr,0,0);
 
-  let confetti = [];
-  function burstConfetti(){
-    const count = 90;
-    const x = innerWidth/2, y = innerHeight/3;
+    buildStars();
+    buildDust();
+  }
+  addEventListener("resize", resize);
+
+  let starPts = [];
+  function buildStars(){
+    starPts = [];
+    const count = Math.floor((innerWidth * innerHeight) / 9000);
     for(let i=0;i<count;i++){
-      confetti.push({
-        x, y,
-        vx: (Math.random()*8 - 4),
-        vy: (Math.random()*-10 - 3),
-        g: 0.25 + Math.random()*0.15,
-        s: 3 + Math.random()*4,
-        a: 1,
-        r: Math.random()*Math.PI*2,
-        vr: (Math.random()*0.2 - 0.1)
+      starPts.push({
+        x: Math.random()*innerWidth,
+        y: Math.random()*innerHeight,
+        r: Math.random()*1.4 + 0.2,
+        a: Math.random()*0.7 + 0.2,
+        tw: Math.random()*Math.PI*2
       });
     }
   }
 
-  function draw(){
-    ctx.clearRect(0,0,innerWidth,innerHeight);
-    for(const p of confetti){
-      p.vy += p.g;
-      p.x += p.vx;
-      p.y += p.vy;
-      p.r += p.vr;
-      p.a *= 0.985;
-
-      ctx.save();
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.r);
-      ctx.globalAlpha = Math.max(p.a,0);
-      // color suave variado sin hardcodear paleta fija (solo alternancia)
-      const hue = (Math.sin(p.x*0.01 + p.y*0.01) * 30) + 330;
-      ctx.fillStyle = `hsl(${hue} 90% 70%)`;
-      ctx.fillRect(-p.s/2, -p.s/2, p.s, p.s*1.6);
-      ctx.restore();
+  let dustPts = [];
+  function buildDust(){
+    dustPts = [];
+    const count = Math.floor((innerWidth * innerHeight) / 7000);
+    for(let i=0;i<count;i++){
+      dustPts.push({
+        x: Math.random()*innerWidth,
+        y: Math.random()*innerHeight,
+        r: Math.random()*2.4 + 0.4,
+        a: Math.random()*0.10 + 0.03,
+        z: Math.random()*1.2 + 0.4
+      });
     }
-    confetti = confetti.filter(p => p.a > 0.05 && p.y < innerHeight + 40);
-    requestAnimationFrame(draw);
   }
-  draw();
 
-  // un pequeño gesto inicial
-  setTimeout(()=> { popHearts(12); burstConfetti(); }, 600);
+  function renderSky(t){
+    // Stars
+    sctx.clearRect(0,0,innerWidth,innerHeight);
+    for(const p of starPts){
+      const tw = 0.35 + 0.65*(0.5 + 0.5*Math.sin(t*0.001 + p.tw));
+      sctx.globalAlpha = p.a * tw;
+      sctx.fillStyle = "#ffffff";
+      sctx.beginPath();
+      sctx.arc(p.x + px*10*(1-p.r), p.y + py*8*(1-p.r), p.r, 0, Math.PI*2);
+      sctx.fill();
+    }
+
+    // Dust
+    dctx.clearRect(0,0,innerWidth,innerHeight);
+    for(const p of dustPts){
+      dctx.globalAlpha = p.a;
+      // color suave con variación
+      const hue = 280 + (p.x/innerWidth)*40;
+      dctx.fillStyle = `hsla(${hue} 90% 75% / ${p.a})`;
+      dctx.beginPath();
+      dctx.arc(p.x + px*18*(1/p.z), p.y + py*14*(1/p.z), p.r, 0, Math.PI*2);
+      dctx.fill();
+    }
+
+    requestAnimationFrame(renderSky);
+  }
+
+  // Init
+  resize();
+  spawnBubbles(notes);
+  updateCounter();
+  requestAnimationFrame(renderSky);
 </script>
 </body>
 </html>
