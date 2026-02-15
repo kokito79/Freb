@@ -383,7 +383,9 @@
       <div class="envelope" id="envelope">
         <div class="env-body">
           <div class="env-top">
-            <div class="tag"><span class="dot"></span> Para Ale</div>
+  <div class="tag"><span class="dot"></span> Para Ale</div>
+  <button class="close" id="closeLetter" type="button">Cerrar ✕</button>
+</div>
           </div>
 
           <div class="flap" aria-hidden="true"></div>
@@ -553,11 +555,10 @@ let clipTimer = null;
 
     let started = false;
 
-   async function tryAutoplay(){
+  async function tryAutoplay(){
   try{
-    await audio.play();
-
     audio.currentTime = CLIP_START;
+    await audio.play();
 
     if (clipTimer) clearTimeout(clipTimer);
     clipTimer = setTimeout(() => {
