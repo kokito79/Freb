@@ -354,8 +354,7 @@
 
   <main class="wrap">
     <h1>Feliz 14 de febrero 💘</h1>
-    <p class="sub">Para Ale :two_hearts:</p>
-    <p class="sub">Toca el corazón  para abrir tu carta</p>
+    <p class="sub">Para Ale💞 "Toca el corazón"</p>
 
     <!-- Música inicial -->
     <section class="musicbar" aria-label="Música">
@@ -385,7 +384,6 @@
         <div class="env-body">
           <div class="env-top">
             <div class="tag"><span class="dot"></span> Para Ale</div>
-            <button class="close" id="closeLetter" type="button">Cerrar ✕</button>
           </div>
 
           <div class="flap" aria-hidden="true"></div>
@@ -506,55 +504,131 @@
     // 2) Carta / Sobre
     // =========================
     
-   document.addEventListener('DOMContentLoaded', () => {
-  const openBtn = document.getElementById('openLetter');
-  const modal = document.getElementById('letterModal');
-  const closeBtn = document.getElementById('closeLetter');
+  
+   const openBtn = document.getElementById('openLetter');
+    const modal = document.getElementById('letterModal');
+    const closeBtn = document.getElementById('closeLetter');
+    const envelope = document.getElementById('envelope');
+    const openAnim = document.getElementById('openAnim');
+    const CLIP_START = 155;      // 2:35
+const CLIP_DURATION = 34000; // 34s en ms
+let clipTimer = null;
 
-  const envelope = document.getElementById('envelope');
-  const openAnim = document.getElementById('openAnim');
+    function openModal(){
+  modal.classList.add('show');
+  closeBtn.focus();
 
-  if (!openBtn || !modal || !closeBtn) {
-    console.warn('Falta un elemento: openLetter / letterModal / closeLetter');
-    return;
-  }
+  // 🔥 Reinicia el sobre cada vez que se abre el modal
+  envelope.classList.remove('opened');
+  openAnim.textContent = '💌 Abrir sobre';
+}
+    function closeModal(){
+  modal.classList.remove('show');
 
-  function openModal() {
-    modal.classList.add('show');
-    // Reinicia el sobre
-    if (envelope) envelope.classList.remove('opened');
-    if (openAnim) openAnim.textContent = '💌 Abrir sobre';
-    closeBtn.focus();
-  }
+  envelope.classList.remove('opened');
+  openAnim.textContent = '💌 Abrir sobre';
+}
 
-  function closeModal() {
-    modal.classList.remove('show');
-    // Reinicia el sobre
-    if (envelope) envelope.classList.remove('opened');
-    if (openAnim) openAnim.textContent = '💌 Abrir sobre';
-  }
+    openBtn.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
+    window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.classList.contains('show')) closeModal(); });
 
-  // Abrir
-  openBtn.addEventListener('click', openModal);
-
-  // Cerrar (botón)
-  closeBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    closeModal();
-  });
-
-  // Cerrar tocando fuera de la tarjeta
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeModal();
-  });
-
-  // Cerrar con ESC
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
-  });
+    openAnim.addEventListener('click', ()=>{
+  const isOpen = envelope.classList.toggle('opened');
+  openAnim.textContent = isOpen ? '📩 Ocultar sobre' : '💌 Abrir sobre';
 });
-   
+
+     // =========================
+    // 3) Audio inicial (autoplay + fallback)
+    // =========================
+    const audio = document.getElementById('song');
+    const musicBtn = document.getElementById('musicBtn');
+    const vol = document.getElementById('vol');
+    const statusEl = document.getElementById('musicStatus');
+
+    audio.volume = Number(vol.value);
+    vol.addEventListener('input', ()=> audio.volume = Number(vol.value));
+
+    let started = false;
+
+   async function tryAutoplay(){
+  try{
+    await audio.play();
+
+    audio.currentTime = CLIP_START;
+
+    if (clipTimer) clearTimeout(clipTimer);
+    clipTimer = setTimeout(() => {
+      audio.pause();
+      audio.currentTime = CLIP_START;
+      musicBtn.textContent = '▶ Música';
+      statusEl.textContent = 'Fragmento terminado 💖';
+    }, CLIP_DURATION);
+
+    started = true;
+    musicBtn.textContent = '⏸ Música';
+    statusEl.textContent = 'Reproduciendo fragmento 🎶';
+  }catch{
+    musicBtn.textContent = '▶ Activar música';
+    statusEl.textContent = 'Tu navegador bloqueó el autoplay. Toca “Activar música”.';
+  }
+}
+
+   function toggleMusic(){
+  if(audio.paused){
+    audio.currentTime = CLIP_START;
+
+    audio.play().then(()=>{
+      started = true;
+      musicBtn.textContent = '⏸ Música';
+      statusEl.textContent = 'Reproduciendo fragmento 🎶';
+
+      if (clipTimer) clearTimeout(clipTimer);
+      clipTimer = setTimeout(() => {
+        audio.pause();
+        audio.currentTime = CLIP_START;
+        musicBtn.textContent = '▶ Música';
+        statusEl.textContent = 'Fragmento terminado 💖';
+      }, CLIP_DURATION);
+
+    }).catch(()=>{
+      statusEl.textContent = 'No se pudo reproducir. Revisa que exista song.mp3.';
+    });
+  }else{
+    audio.pause();
+    audio.currentTime = CLIP_START;
+    if (clipTimer) clearTimeout(clipTimer);
+    musicBtn.textContent = '▶ Música';
+    statusEl.textContent = 'Pausado';
+  }
+}
+
+     musicBtn.addEventListener('click', toggleMusic);
+    musicBtn.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') toggleMusic(); });
+
+    // Intento automático al cargar
+    window.addEventListener('load', tryAutoplay);
+
+    // Extra: si el usuario toca cualquier parte, volvemos a intentar si no inició
+   window.addEventListener('pointerdown', ()=>{
+  if(!started && audio.paused) {
+    audio.currentTime = CLIP_START;
+    audio.play().then(()=>{
+      started = true;
+      musicBtn.textContent = '⏸ Música';
+      statusEl.textContent = 'Reproduciendo fragmento 🎶';
+
+      if (clipTimer) clearTimeout(clipTimer);
+      clipTimer = setTimeout(() => {
+        audio.pause();
+        audio.currentTime = CLIP_START;
+        musicBtn.textContent = '▶ Música';
+        statusEl.textContent = 'Fragmento terminado 💖';
+      }, CLIP_DURATION);
+    }).catch(()=>{});
+  }
+}, { passive:true });
   </script>
 </body>
 </html>
