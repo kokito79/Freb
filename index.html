@@ -145,7 +145,8 @@
       display:grid;
       place-items:center;
       gap: 12px;
-      transform: translateY(10px);
+      transform: none;
+  margin-top: 20px;
     }
     .hint{
       font-size: 14px;
@@ -161,8 +162,8 @@
       cursor:pointer;
       outline:none;
       padding: 0;
-      width: min(260px, 66vw);
-      height: min(260px, 66vw);
+      width: min(200px, 52vw);
+  height: min(200px, 52vw);
       position:relative;
       filter: drop-shadow(0 22px 65px rgba(0,0,0,.65));
       transition: transform .15s ease;
@@ -219,22 +220,21 @@
 
     /* Modal + Sobre */
     .backdrop{
-      position:fixed;
-      inset:0;
-      background: rgba(0,0,0,.55);
-      display:none;
-      place-items:center;
-      padding: 14px;
-      z-index: 10;
-    }
+  position:fixed;
+  inset:0;
+  background: rgba(0,0,0,.55);
+  display:none;
+  place-items:center;
+  padding: 14px;
+  z-index: 10;
+}
     .backdrop.show{ display:grid; animation: fadeIn .2s ease-out }
     @keyframes fadeIn{ from{opacity:0} to{opacity:1} }
 
     .envelope{
-  width: 100%;
-  max-width: 760px;
-  justify-self: center;
-  position: relative;
+  width: min(520px, calc(100vw - 28px));
+  margin: 0 auto;
+  position:relative;
   perspective: 1200px;
 }
 
@@ -278,7 +278,7 @@
 
     /* Animación sobre: tapa */
     .flap{
-      height: 120px;
+      height: 90px;
       background: rgba(255,255,255,.06);
       border-bottom: 1px solid rgba(255,255,255,.10);
       transform-origin: top center;
@@ -297,11 +297,15 @@
     }
 
     .letter{
-      padding: 18px;
-      transform: translateY(-28px);
-      opacity: 0;
-      transition: transform .55s cubic-bezier(.2,.85,.2,1), opacity .45s ease;
-    }
+  padding: 14px 16px 10px 16px;
+  transform: translateY(-10px);
+  opacity: 0;
+  transition: transform .55s cubic-bezier(.2,.85,.2,1), opacity .45s ease;
+}
+    .opened .letter{
+  transform: translateY(0);
+  opacity:1;
+}
     .letter p{ margin: 0 0 10px 0; line-height:1.6; color: rgba(255,255,255,.92) }
     .letter p:last-child{ margin-bottom:0 }
 
@@ -309,13 +313,14 @@
     .opened .letter{ transform: translateY(0); opacity:1; }
 
     .actions{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      justify-content:space-between;
-      align-items:center;
-      padding: 0 18px 18px 18px;
-    }
+  display:flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content:center;
+  align-items:center;
+  padding: 0 18px 18px 18px;
+  text-align:center;
+}
     .btn{
       border:1px solid rgba(255,255,255,.18);
       background: rgba(255,255,255,.08);
@@ -337,6 +342,12 @@
       outline-offset: 3px;
       border-radius: 12px;
     }
+    .wrap{
+  padding: 18px;
+}
+.musicbar{
+  width: min(520px, calc(100vw - 28px));
+}
   </style>
 </head>
 
@@ -504,11 +515,15 @@
     function openModal(){
       modal.classList.add('show');
       closeBtn.focus();
+      envelope.classList.remove('opened');
+openAnim.textContent = '💌 Abrir sobre';
     }
     function closeModal(){
       modal.classList.remove('show');
       envelope.classList.remove('opened');
       openBtn.focus();
+      envelope.classList.remove('opened');
+openAnim.textContent = '💌 Abrir sobre';
     }
 
     openBtn.addEventListener('click', openModal);
@@ -516,9 +531,10 @@
     modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
     window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.classList.contains('show')) closeModal(); });
 
-    openAnim.addEventListener('click', ()=>{
-      envelope.classList.add('opened');
-    });
+   openAnim.addEventListener('click', ()=>{
+  const isOpen = envelope.classList.toggle('opened');
+  openAnim.textContent = isOpen ? '📩 Ocultar sobre' : '💌 Abrir sobre';
+});
 
     // =========================
     // 3) Audio inicial (autoplay + fallback)
