@@ -224,18 +224,19 @@
       background: rgba(0,0,0,.55);
       display:none;
       place-items:center;
-      padding: 18px;
+      padding: 14px;
       z-index: 10;
     }
     .backdrop.show{ display:grid; animation: fadeIn .2s ease-out }
     @keyframes fadeIn{ from{opacity:0} to{opacity:1} }
 
     .envelope{
-      width: min(760px, 94vw);
-      max-width: 760px;
-      position:relative;
-      perspective: 1200px;
-    }
+  width: 100%;
+  max-width: 760px;
+  justify-self: center;
+  position: relative;
+  perspective: 1200px;
+}
 
     .env-body{
       border-radius: 22px;
@@ -526,6 +527,9 @@
     const musicBtn = document.getElementById('musicBtn');
     const vol = document.getElementById('vol');
     const statusEl = document.getElementById('musicStatus');
+    const CLIP_START = 155;      // 2:35
+const CLIP_DURATION = 34000; // 34s en ms
+let clipTimer = null;
 
     audio.volume = Number(vol.value);
     vol.addEventListener('input', ()=> audio.volume = Number(vol.value));
@@ -536,48 +540,49 @@
   try{
     await audio.play();
 
-    // 🔥 Empieza en 2:50
-    audio.currentTime = 170;
+    audio.currentTime = CLIP_START;
 
-    // 🔥 Se detiene después de 20 segundos
-    setTimeout(() => {
+    if (clipTimer) clearTimeout(clipTimer);
+    clipTimer = setTimeout(() => {
       audio.pause();
-      audio.currentTime = 170;
+      audio.currentTime = CLIP_START;
       musicBtn.textContent = '▶ Música';
       statusEl.textContent = 'Fragmento terminado 💖';
-    }, 20000);
+    }, CLIP_DURATION);
 
     started = true;
     musicBtn.textContent = '⏸ Música';
     statusEl.textContent = 'Reproduciendo fragmento 🎶';
-
   }catch{
     musicBtn.textContent = '▶ Activar música';
     statusEl.textContent = 'Tu navegador bloqueó el autoplay. Toca “Activar música”.';
   }
 }
 
-   function toggleMusic(){
+  function toggleMusic(){
   if(audio.paused){
-    audio.currentTime = 170; // empieza en 2:50
+    audio.currentTime = CLIP_START;
+
     audio.play().then(()=>{
       started = true;
       musicBtn.textContent = '⏸ Música';
       statusEl.textContent = 'Reproduciendo fragmento 🎶';
 
-      setTimeout(() => {
+      if (clipTimer) clearTimeout(clipTimer);
+      clipTimer = setTimeout(() => {
         audio.pause();
-        audio.currentTime = 170;
+        audio.currentTime = CLIP_START;
         musicBtn.textContent = '▶ Música';
         statusEl.textContent = 'Fragmento terminado 💖';
-      }, 20000);
+      }, CLIP_DURATION);
 
     }).catch(()=>{
-      statusEl.textContent = 'No se pudo reproducir el audio.';
+      statusEl.textContent = 'No se pudo reproducir. Revisa que exista song.mp3.';
     });
   }else{
     audio.pause();
-    audio.currentTime = 170;
+    audio.currentTime = CLIP_START;
+    if (clipTimer) clearTimeout(clipTimer);
     musicBtn.textContent = '▶ Música';
     statusEl.textContent = 'Pausado';
   }
@@ -591,14 +596,23 @@
 
     // Extra: si el usuario toca cualquier parte, volvemos a intentar si no inició
     window.addEventListener('pointerdown', ()=>{
-      if(!started && audio.paused) {
-        audio.play().then(()=>{
-          started = true;
-          musicBtn.textContent = '⏸ Música';
-          statusEl.textContent = 'Reproduciendo 🎶';
-        }).catch(()=>{});
-      }
-    }, { once:false, passive:true });
+  if(!started && audio.paused) {
+    audio.currentTime = CLIP_START;
+    audio.play().then(()=>{
+      started = true;
+      musicBtn.textContent = '⏸ Música';
+      statusEl.textContent = 'Reproduciendo fragmento 🎶';
+
+      if (clipTimer) clearTimeout(clipTimer);
+      clipTimer = setTimeout(() => {
+        audio.pause();
+        audio.currentTime = CLIP_START;
+        musicBtn.textContent = '▶ Música';
+        statusEl.textContent = 'Fragmento terminado 💖';
+      }, CLIP_DURATION);
+    }).catch(()=>{});
+  }
+}, { passive:true });
   </script>
 </body>
 </html>
