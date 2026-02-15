@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Para Ale 💘</title>
+  <style>
+    :root{
+      --bg1:#060818;
+      --bg2:#02030b;
+      --text:#f7f7ff;
+      --muted: rgba(255,255,255,.75);
+      --glass: rgba(18, 22, 44, .62);
+      --glass2: rgba(18, 22, 44, .90);
+      --border: rgba(255,255,255,.14);
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --red:#ff2d55;
+      --red2:#ff4d6d;
+      --glow: 0 0 24px rgba(255,45,85,.55);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      overflow:hidden;
+      background: radial-gradient(1200px 900px at 50% 30%, var(--bg1), var(--bg2));
+    }
+
+    /* Canvas fondo */
+    canvas#sky{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      z-index:0;
+    }
+
+    .wrap{
+      position:relative;
+      height:100vh;
+      display:grid;
+      place-items:center;
+      padding: 24px;
+      z-index:1;
+    }
+
+    h1{
+      position:absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      margin:0;
+      text-align:center;
+      font-weight:900;
+      letter-spacing:.6px;
+      font-size: clamp(22px, 3.8vw, 46px);
+      text-shadow: 0 10px 40px rgba(0,0,0,.65);
+      user-select:none;
+    }
+    .sub{
+      position:absolute;
+      top: 74px;
+      left: 50%;
+      transform: translateX(-50%);
+      margin:0;
+      font-size: 14px;
+      color: var(--muted);
+      user-select:none;
+      text-align:center;
+      padding:0 14px;
+    }
+
+    /* Barra música (pantalla inicial) */
+    .musicbar{
+      position:absolute;
+      top: 110px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(720px, 92vw);
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      padding: 10px 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 18px 60px rgba(0,0,0,.22);
+    }
+    .music-left{
+      display:flex; gap:10px; align-items:center; min-width: 0;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,45,85,.14);
+      border: 1px solid rgba(255,45,85,.28);
+      font-weight:800;
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .pill:active{ transform: scale(.99) }
+    .track{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .track strong{
+      font-size: 13px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .track span{
+      font-size: 12px;
+      color: var(--muted);
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .music-right{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    input[type="range"]{
+      width: 140px;
+      accent-color: var(--red);
+    }
+    @media (max-width: 460px){
+      input[type="range"]{ width: 110px; }
+      .track span{ display:none; }
+    }
+
+    /* Área del corazón */
+    .center{
+      display:grid;
+      place-items:center;
+      gap: 12px;
+      transform: translateY(10px);
+    }
+    .hint{
+      font-size: 14px;
+      color: var(--muted);
+      text-align:center;
+      user-select:none;
+    }
+
+    .heart-btn{
+      appearance:none;
+      border:none;
+      background:transparent;
+      cursor:pointer;
+      outline:none;
+      padding: 0;
+      width: min(260px, 66vw);
+      height: min(260px, 66vw);
+      position:relative;
+      filter: drop-shadow(0 22px 65px rgba(0,0,0,.65));
+      transition: transform .15s ease;
+    }
+    .heart-btn:active{ transform: scale(.985) }
+
+    /* Corazón más “3D” */
+    .heart3d{
+      width: 100%;
+      height: 100%;
+      position:absolute;
+      inset:0;
+      transform: rotate(-45deg);
+      border-radius: 22px;
+      background:
+        radial-gradient(70% 70% at 30% 28%, rgba(255,255,255,.30), transparent 38%),
+        radial-gradient(80% 80% at 32% 30%, var(--red2), var(--red));
+      box-shadow: var(--glow);
+      animation: beat 1.02s ease-in-out infinite;
+    }
+    .heart3d::before, .heart3d::after{
+      content:"";
+      position:absolute;
+      width: 100%;
+      height: 100%;
+      background: inherit;
+      border-radius: 50%;
+      box-shadow: inherit;
+    }
+    .heart3d::before{ top: -50%; left: 0 }
+    .heart3d::after{ top: 0; left: 50% }
+
+    .ring{
+      position:absolute;
+      inset:-26px;
+      border-radius: 40px;
+      background: radial-gradient(circle at 50% 50%, rgba(255,45,85,.20), transparent 55%);
+      filter: blur(.2px);
+      opacity:.85;
+      pointer-events:none;
+      animation: pulse 1.02s ease-in-out infinite;
+    }
+    @keyframes beat{
+      0%, 100%{ transform: rotate(-45deg) scale(1) }
+      18%{ transform: rotate(-45deg) scale(1.07) }
+      42%{ transform: rotate(-45deg) scale(0.985) }
+      70%{ transform: rotate(-45deg) scale(1.10) }
+    }
+    @keyframes pulse{
+      0%,100%{ transform: scale(1); opacity:.62 }
+      40%{ transform: scale(1.10); opacity:.92 }
+      70%{ transform: scale(1.18); opacity:.40 }
+    }
+
+    /* Modal + Sobre */
+    .backdrop{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      place-items:center;
+      padding: 18px;
+      z-index: 10;
+    }
+    .backdrop.show{ display:grid; animation: fadeIn .2s ease-out }
+    @keyframes fadeIn{ from{opacity:0} to{opacity:1} }
+
+    .envelope{
+      width: min(760px, 94vw);
+      max-width: 760px;
+      position:relative;
+      perspective: 1200px;
+    }
+
+    .env-body{
+      border-radius: 22px;
+      background: linear-gradient(180deg, var(--glass), var(--glass2));
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .env-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      gap: 10px;
+    }
+    .tag{
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:999px;
+      background: var(--red);
+      box-shadow: 0 0 18px rgba(255,45,85,.55);
+    }
+    .close{
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      cursor:pointer;
+    }
+    .close:active{ transform: scale(.99) }
+
+    /* Animación sobre: tapa */
+    .flap{
+      height: 120px;
+      background: rgba(255,255,255,.06);
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      transform-origin: top center;
+      transform: rotateX(0deg);
+      transition: transform .55s cubic-bezier(.2,.85,.2,1);
+      position:relative;
+    }
+    .flap::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(135deg, transparent 49%, rgba(255,255,255,.08) 50%, transparent 51%),
+        radial-gradient(circle at 30% 40%, rgba(255,45,85,.18), transparent 45%);
+      opacity:.9;
+    }
+
+    .letter{
+      padding: 18px;
+      transform: translateY(-28px);
+      opacity: 0;
+      transition: transform .55s cubic-bezier(.2,.85,.2,1), opacity .45s ease;
+    }
+    .letter p{ margin: 0 0 10px 0; line-height:1.6; color: rgba(255,255,255,.92) }
+    .letter p:last-child{ margin-bottom:0 }
+
+    .opened .flap{ transform: rotateX(-140deg); }
+    .opened .letter{ transform: translateY(0); opacity:1; }
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:space-between;
+      align-items:center;
+      padding: 0 18px 18px 18px;
+    }
+    .btn{
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 12px 14px;
+      cursor:pointer;
+      font-weight:800;
+    }
+    .btn.primary{
+      border-color: rgba(255,45,85,.45);
+      background: rgba(255,45,85,.16);
+      box-shadow: 0 0 20px rgba(255,45,85,.18);
+    }
+    .small{ font-size: 13px; color: var(--muted); }
+
+    :focus-visible{
+      outline: 3px solid rgba(255,45,85,.55);
+      outline-offset: 3px;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="sky" aria-hidden="true"></canvas>
+
+  <main class="wrap">
+    <h1>Feliz 14 de febrero 💘</h1>
+    <p class="sub">Para Ale — toca el corazón para abrir tu carta</p>
+
+    <!-- Música inicial -->
+    <section class="musicbar" aria-label="Música">
+      <div class="music-left">
+        <div class="pill" id="musicBtn" role="button" tabindex="0">▶ Música</div>
+        <div class="track">
+          <strong>Tu canción (song.mp3)</strong>
+          <span id="musicStatus">Intentando reproducir automáticamente…</span>
+        </div>
+      </div>
+      <div class="music-right">
+        <input id="vol" type="range" min="0" max="1" step="0.01" value="0.7" aria-label="Volumen" />
+      </div>
+    </section>
+
+    <section class="center">
+      <button class="heart-btn" id="openLetter" aria-haspopup="dialog" aria-controls="letterModal" aria-label="Abrir carta">
+        <div class="ring"></div>
+        <div class="heart3d"></div>
+      </button>
+      <div class="hint">✨ Tócalo para abrir tu carta ✨</div>
+    </section>
+
+    <!-- Modal carta -->
+    <div class="backdrop" id="letterModal" role="dialog" aria-modal="true" aria-label="Carta para Ale">
+      <div class="envelope" id="envelope">
+        <div class="env-body">
+          <div class="env-top">
+            <div class="tag"><span class="dot"></span> Para Ale</div>
+            <button class="close" id="closeLetter" type="button">Cerrar ✕</button>
+          </div>
+
+          <div class="flap" aria-hidden="true"></div>
+
+          <div class="letter">
+            <p><strong>Ale,</strong></p>
+            <p>
+              Hoy solo quería dejarte algo chiquito pero de corazón.
+              Gracias por tu amistad, por tu forma de ser, y por esos momentos que sin querer,
+              terminan haciendo el día más bonito.
+            </p>
+            <p>
+              Que este 14 sea un recordatorio de algo simple:
+              <strong>me alegra muchísimo que estés en mi vida</strong>. 💞
+            </p>
+            <p>Con cariño: <em>tu amigo</em> 🌙</p>
+          </div>
+
+          <div class="actions">
+            <button class="btn primary" id="openAnim" type="button">💌 Abrir sobre</button>
+            <span class="small">Tip: toca “Abrir sobre” (se anima)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Audio: pon song.mp3 junto a este HTML -->
+    <audio id="song" preload="auto" loop>
+      <source src="song.mp3" type="audio/mpeg" />
+    </audio>
+  </main>
+
+  <script>
+    // =========================
+    // 1) Fondo WOW con Canvas
+    // =========================
+    const canvas = document.getElementById('sky');
+    const ctx = canvas.getContext('2d', { alpha: true });
+
+    let w, h, dpr;
+    function resize(){
+      dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      w = canvas.width = Math.floor(innerWidth * dpr);
+      h = canvas.height = Math.floor(innerHeight * dpr);
+      canvas.style.width = innerWidth + 'px';
+      canvas.style.height = innerHeight + 'px';
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Partículas estrellas
+    const STAR_COUNT = Math.floor((innerWidth * innerHeight) / 9000);
+    const stars = [];
+    function rand(min, max){ return Math.random() * (max - min) + min; }
+
+    function initStars(){
+      stars.length = 0;
+      const count = Math.max(120, STAR_COUNT);
+      for(let i=0;i<count;i++){
+        stars.push({
+          x: rand(0, w),
+          y: rand(0, h),
+          r: rand(0.6, 1.8) * dpr,
+          a: rand(0.18, 0.95),
+          tw: rand(0.002, 0.01),
+          sp: rand(0.05, 0.22) * dpr, // drift speed
+          layer: Math.random() < 0.7 ? 1 : 2
+        });
+      }
+    }
+    initStars();
+    window.addEventListener('resize', initStars);
+
+    let mx = 0, my = 0;
+    window.addEventListener('pointermove', (e)=>{
+      mx = (e.clientX / innerWidth - 0.5);
+      my = (e.clientY / innerHeight - 0.5);
+    }, { passive:true });
+
+    function draw(){
+      ctx.clearRect(0,0,w,h);
+
+      // Glow suave central
+      const gx = w*0.5 + mx*40*dpr;
+      const gy = h*0.45 + my*40*dpr;
+      const grad = ctx.createRadialGradient(gx, gy, 0, gx, gy, 520*dpr);
+      grad.addColorStop(0, 'rgba(255,45,85,0.10)');
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0,0,w,h);
+
+      // Estrellas
+      for(const s of stars){
+        // drift
+        s.x -= s.sp * (s.layer === 1 ? 1 : 1.8);
+        s.y -= s.sp * (s.layer === 1 ? 0.6 : 1.1);
+        if(s.x < -10*dpr) s.x = w + 10*dpr;
+        if(s.y < -10*dpr) s.y = h + 10*dpr;
+
+        // twinkle
+        s.a += (Math.sin(performance.now()*s.tw) * 0.004);
+        const alpha = Math.max(0.08, Math.min(1, s.a));
+
+        const px = s.x + mx * (s.layer === 1 ? 18*dpr : 34*dpr);
+        const py = s.y + my * (s.layer === 1 ? 12*dpr : 24*dpr);
+
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+        ctx.arc(px, py, s.r, 0, Math.PI*2);
+        ctx.fill();
+      }
+
+      requestAnimationFrame(draw);
+    }
+    draw();
+
+    // =========================
+    // 2) Carta / Sobre
+    // =========================
+    const openBtn = document.getElementById('openLetter');
+    const modal = document.getElementById('letterModal');
+    const closeBtn = document.getElementById('closeLetter');
+    const envelope = document.getElementById('envelope');
+    const openAnim = document.getElementById('openAnim');
+
+    function openModal(){
+      modal.classList.add('show');
+      closeBtn.focus();
+    }
+    function closeModal(){
+      modal.classList.remove('show');
+      envelope.classList.remove('opened');
+      openBtn.focus();
+    }
+
+    openBtn.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
+    window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && modal.classList.contains('show')) closeModal(); });
+
+    openAnim.addEventListener('click', ()=>{
+      envelope.classList.add('opened');
+    });
+
+    // =========================
+    // 3) Audio inicial (autoplay + fallback)
+    // =========================
+    const audio = document.getElementById('song');
+    const musicBtn = document.getElementById('musicBtn');
+    const vol = document.getElementById('vol');
+    const statusEl = document.getElementById('musicStatus');
+
+    audio.volume = Number(vol.value);
+    vol.addEventListener('input', ()=> audio.volume = Number(vol.value));
+
+    let started = false;
+
+    async function tryAutoplay(){
+  try{
+    await audio.play();
+
+    // 🔥 Empieza en 2:50
+    audio.currentTime = 170;
+
+    // 🔥 Se detiene después de 20 segundos
+    setTimeout(() => {
+      audio.pause();
+      audio.currentTime = 170;
+      musicBtn.textContent = '▶ Música';
+      statusEl.textContent = 'Fragmento terminado 💖';
+    }, 20000);
+
+    started = true;
+    musicBtn.textContent = '⏸ Música';
+    statusEl.textContent = 'Reproduciendo fragmento 🎶';
+
+  }catch{
+    musicBtn.textContent = '▶ Activar música';
+    statusEl.textContent = 'Tu navegador bloqueó el autoplay. Toca “Activar música”.';
+  }
+}
+
+   function toggleMusic(){
+  if(audio.paused){
+    audio.currentTime = 170; // empieza en 2:50
+    audio.play().then(()=>{
+      started = true;
+      musicBtn.textContent = '⏸ Música';
+      statusEl.textContent = 'Reproduciendo fragmento 🎶';
+
+      setTimeout(() => {
+        audio.pause();
+        audio.currentTime = 170;
+        musicBtn.textContent = '▶ Música';
+        statusEl.textContent = 'Fragmento terminado 💖';
+      }, 20000);
+
+    }).catch(()=>{
+      statusEl.textContent = 'No se pudo reproducir el audio.';
+    });
+  }else{
+    audio.pause();
+    audio.currentTime = 170;
+    musicBtn.textContent = '▶ Música';
+    statusEl.textContent = 'Pausado';
+  }
+}
+
+    musicBtn.addEventListener('click', toggleMusic);
+    musicBtn.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') toggleMusic(); });
+
+    // Intento automático al cargar
+    window.addEventListener('load', tryAutoplay);
+
+    // Extra: si el usuario toca cualquier parte, volvemos a intentar si no inició
+    window.addEventListener('pointerdown', ()=>{
+      if(!started && audio.paused) {
+        audio.play().then(()=>{
+          started = true;
+          musicBtn.textContent = '⏸ Música';
+          statusEl.textContent = 'Reproduciendo 🎶';
+        }).catch(()=>{});
+      }
+    }, { once:false, passive:true });
+  </script>
+</body>
+</html>
