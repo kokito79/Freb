@@ -74,6 +74,15 @@
       display:grid;
       justify-items:center;
       gap:16px;
+      min-height:90vh;
+      align-content: start;
+      padding-top: 10px;
+    }
+    /* iPhone 11 / móviles: que la pantalla de flores empiece arriba */
+    .screen--flowers{
+      min-height: 88vh;
+      align-content: start;
+      padding-top: 18px;
     }
 
     /* ---------- INTRO ---------- */
@@ -166,11 +175,12 @@
       font-size: clamp(15px, 3.7vw, 18px);
       transform: translateY(-8px);
       opacity:0;
+      margin-top: 6px;
     }
 
     .bouquet{
       width:min(430px, 92vw);
-      height: 450px;
+      height: 360px;
       border:0;
       background: transparent;
       cursor:pointer;
@@ -180,6 +190,7 @@
       outline:none;
       user-select:none;
       touch-action: manipulation;
+      margin-top:-65px;
     }
 
     .tapBadge{
@@ -535,7 +546,7 @@
           </p>
 
           <p class="signature">
-            Con cariño,kokito<br />
+            Con cariño, kokito<br />
             <span class="line">✨</span>
           </p>
         </div>
