@@ -510,9 +510,7 @@
     const closeBtn = document.getElementById('closeLetter');
     const envelope = document.getElementById('envelope');
     const openAnim = document.getElementById('openAnim');
-    const CLIP_START = 155;      // 2:35
-const CLIP_DURATION = 34000; // 34s en ms
-let clipTimer = null;
+    
 
     function openModal(){
   modal.classList.add('show');
@@ -546,6 +544,9 @@ let clipTimer = null;
     const musicBtn = document.getElementById('musicBtn');
     const vol = document.getElementById('vol');
     const statusEl = document.getElementById('musicStatus');
+    const CLIP_START = 155;      // 2:35
+const CLIP_DURATION = 34000; // 34s en ms
+let clipTimer = null;
 
     audio.volume = Number(vol.value);
     vol.addEventListener('input', ()=> audio.volume = Number(vol.value));
